@@ -3,16 +3,16 @@ var tasks = {};
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
-  var taskSpan = $("<span>")
-    .addClass("badge badge-primary badge-pill")
-    .text(taskDate);
-  var taskP = $("<p>")
-    .addClass("m-1")
-    .text(taskText);
+
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(taskDate);
+
+  var taskP = $("<p>").addClass("m-1").text(taskText);
 
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  // check due date
+  auditTask(taskLi);
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -55,7 +55,7 @@ $(".list-group").on("click", "p", function() {
   textInput.trigger("focus");
 });
 
-$("list-group").on("blur", "textarea", function(){
+$("list-group").on("change", "textarea", function(){
   // get the textarea's current value/text
 var text = $(this)
 .val()
@@ -87,18 +87,22 @@ $(this).replaceWith(taskP);
 //value due date was clicked 
 $(".list-group").on("click", "span", function(){
   //get current text
-  var date = $(this)
-  .text()
-  .trim();
+  var date = $(this).text().trim();
 
   //create new input element
-  var dateInput = $ ("<input>")
-  .attr("type", "text")
-  .addClass("form-control")
-  .val(date);
+  var dateInput = $ ("<input>").attr("type", "text").addClass("form-control").val(date);
 
   //swap out elements
   $(this).replaceWith(dateInput);
+
+  //enable jquery ui datepicker
+  dateInput.datepicker({
+    mindate:1,
+    onClose: function() {
+      //when calander is closed, force a change event on the dateInput
+      $(this).trigger("change");
+    }
+  })
 
   //automatialy focus on new element 
   dateInput.trigger("focus");
@@ -248,3 +252,12 @@ $("#trash").droppable({
   }
   
 });
+
+$("#modalDueDate").datepicker({
+  minDate: 1
+});
+
+var auditTask = function(taskE1){
+  //to ensure element is getting t othe function 
+  console.log(taskE1);
+};
