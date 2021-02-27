@@ -276,4 +276,13 @@ function auditTask(taskE1){
 else if (Math.abs(moment().diff(time, "days")) <= 2){
   $(taskE1).addClass("list-group-item-warning");
 }
+
+console.log(taskE1);
 };
+
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el){
+    auditTask(el);
+  });
+}, 1800000);
+
