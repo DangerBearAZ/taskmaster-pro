@@ -109,34 +109,33 @@ $(".list-group").on("click", "span", function(){
 });
 
 //value of due date was changed 
-$(".list-group").on("blur", "input[type='text']", function() {
+$(".list-group").on("change", "input[type='text']", function() {
   // get current text
-  var date = $(this)
-    .val()
-    .trim();
+  var date = $(this).val();
 
    // get the parent ul's id attribute
-   var status = $(this)
-   .closest(".list-group")
-   .attr("id")
-   .replace("list-", "");
+   var status = $(this).closest(".list-group").attr("id").replace("list-", "");
 
   // get the task's position in the list of other li elements
-  var index = $(this)
-    .closest(".list-group-item")
-    .index();
+  var index = $(this).closest(".list-group-item").index();
 
   // update task in array and re-save to localstorage
   tasks[status][index].date = date;
   saveTasks();
 
   // recreate span element with bootstrap classes
-  var taskSpan = $("<span>")
-    .addClass("badge badge-primary badge-pill")
-    .text(date);
-
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(date);
   // replace input with span element
   $(this).replaceWith(taskSpan);
+
+  //pass task's <li> element into auditTask() to check new due date
+  auditTask($(taskSpan).closet(".list-group-item"));
+});
+
+// convert text field into a jquery date picker
+$("#modalDueDate").datepicker({
+  // force user to select a future date
+  minDate: 1
 });
 
 // modal was triggered
@@ -253,10 +252,6 @@ $("#trash").droppable({
   
 });
 
-$("#modalDueDate").datepicker({
-  minDate: 1
-});
-
 //below is what class material had be do but it does not work
 // var auditTask = function(taskEl) {
 //   // to ensure element is getting to the function
@@ -266,10 +261,19 @@ $("#modalDueDate").datepicker({
 function auditTask(taskE1){
   //get date from task element
   var date = $(taskE1).find("span").text().trim();
-  //ensure it worked
-  console.log(date);
 
   //convert to moment object at 5:00pm
   var time = moment(date, "L").set("hour", 17);
   console.log(time);
+
+  //remove any old classes from the element 
+  $(taskE1).removeClass("list-group-item-warning list-group-item-danger");
+
+  //apply new class if task is near/over due date
+  if(moment().isAfter(time)) {
+    $(taskE1).addClass("list-group-item-danger")
+  }
+else if (Math.abs(moment().diff(time, "days")) <= 2){
+  $(taskE1).addClass("list-group-item-warning");
+}
 };
