@@ -257,7 +257,19 @@ $("#modalDueDate").datepicker({
   minDate: 1
 });
 
-var auditTask = function(taskE1){
-  //to ensure element is getting t othe function 
-  console.log(taskE1);
+//below is what class material had be do but it does not work
+// var auditTask = function(taskEl) {
+//   // to ensure element is getting to the function
+//   console.log(taskEl);
+// };
+
+function auditTask(taskE1){
+  //get date from task element
+  var date = $(taskE1).find("span").text().trim();
+  //ensure it worked
+  console.log(date);
+
+  //convert to moment object at 5:00pm
+  var time = moment(date, "L").set("hour", 17);
+  console.log(time);
 };
